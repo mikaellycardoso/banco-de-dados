@@ -15,7 +15,11 @@ class OracleQueries:
         self.conn = None
         self.cur = None
         
-        with open("conexion/passphrase/authentication.oracle", "r") as f:
+        
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        auth_file_path = os.path.join(base_dir, "passphrase", "passphrase", "authentication.oracle")
+        
+        with open(auth_file_path, "r") as f:
             self.user, self.passwd = f.read().split(',')            
 
     def __del__(self):
