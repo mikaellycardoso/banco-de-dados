@@ -46,4 +46,4 @@ class tipo_quarto:
         return self.preco_diaria
      
     def to_string(self) -> str:
-        return f"ID tipo Quarto: {self.id_tipo_quarto()} | Tipo Quarto: {self.get_nome_tipo()} | Descrição: {self.get_descricao_tipo()} | Capacidade Max: {self.get_capacidade_maxima()} | Preço Diária: {self.get_preco_diaria()} "
+        return f"ID tipo Quarto: {self.get_id_tipo_quarto()} | Tipo Quarto: {self.get_nome_tipo()} | Descrição: {self.get_descricao_tipo()} | Capacidade Max: {self.get_capacidade_maxima()} | Preço Diária: {self.get_preco_diaria()} "

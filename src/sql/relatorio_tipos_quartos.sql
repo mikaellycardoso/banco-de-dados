@@ -4,5 +4,5 @@ select t.id_tipo_quarto,
         t.capacidade,
         t.preco_diaria,
         t.criado_em
-    from tipos_quarto tq
+    from tipo_quarto tq
     order by t.nome

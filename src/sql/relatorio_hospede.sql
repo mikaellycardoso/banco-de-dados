@@ -5,5 +5,5 @@ select h.id_hospede,
         h.telefone,
         h.documento,
         h.criado_em
-    from hospedes h
+    from hospede h
     order by h.nome

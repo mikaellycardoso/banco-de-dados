@@ -39,7 +39,7 @@ class Quarto:
     def get_andar_quarto(self) -> int:
         return self.andar_quarto
 
-    def get_tipo(self) -> str:
+    def get_tipo(self) -> tipo_quarto:
         return self.tipo
     
     def get_status(self) -> str:

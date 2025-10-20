@@ -5,6 +5,6 @@ select p.id_pagamento,
         p.metodo,
         p.status
     from 
-        pagamentos p
+        pagamento p
     order by 
         p.data_pagamento 

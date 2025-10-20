@@ -54,4 +54,4 @@ class Hospede:
     
     
     def to_string(self) -> str:
-        return f"ID Hospede: {self.get_id_hospede()} |  Documento: {self.get_documento()} | Nome Completo: {self.get_nome() + " " + self.get_sobrenome()} | Email: {self.get_email()} | Telefone: {self.get_telefone()}"
+        return f"ID Hospede: {self.get_id_hospede()} |  Documento: {self.get_documento()} | Nome Completo: {self.get_nome()} {self.get_sobrenome()} | Email: {self.get_email()} | Telefone: {self.get_telefone()}"

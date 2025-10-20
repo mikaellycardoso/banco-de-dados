@@ -3,12 +3,10 @@ from conexion.oracle_queries import OracleQueries
 class SplashScreen:
 
     def __init__(self):
-        # Consultas de contagem de registros
-        self.qry_total_hospedes = "SELECT COUNT(1) AS total_hospedes FROM hospedes"
-        self.qry_total_quartos = "SELECT COUNT(1) AS total_quartos FROM quartos"
-        self.qry_total_reservas = "SELECT COUNT(1) AS total_reservas FROM reservas"
+        self.qry_total_hospedes = "SELECT COUNT(1) AS total_hospedes FROM hospede"
+        self.qry_total_quartos = "SELECT COUNT(1) AS total_quartos FROM quarto"
+        self.qry_total_reservas = "SELECT COUNT(1) AS total_reservas FROM reserva"
 
-        # Nome(s) do(s) criador(es)
         self.created_by = """
         #        ANNA LUIZA
         #        MIKAELY

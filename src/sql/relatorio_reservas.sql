@@ -8,6 +8,6 @@ select r.id_reserva,
         r.status,
         r.criado_em
     from 
-        reservas r
+        reserva r
     order by 
         r.data_checkin 
