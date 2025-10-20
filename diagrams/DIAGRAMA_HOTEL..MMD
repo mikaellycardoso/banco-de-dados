@@ -1,0 +1,55 @@
+erDiagram
+
+  HOSPEDE ||--o{ RESERVA : "possui"
+  QUARTO  ||--o{ RESERVA : "é reservado em"
+  TIPO_QUARTO ||--o{ QUARTO : "classifica"
+  RESERVA ||--o{ PAGAMENTO : "gera"
+
+  HOSPEDE {
+    INT id_hospede PK
+    VARCHAR nome
+    VARCHAR sobrenome
+    VARCHAR email
+    VARCHAR telefone
+    VARCHAR documento
+    TIMESTAMP criado_em
+  }
+
+  TIPO_QUARTO {
+    INT id_tipo_quarto PK
+    VARCHAR nome_tipo
+    TEXT descricao_tipo
+    INT capacidade_maxima
+    NUMERIC preco_diaria
+    TIMESTAMP criado_em
+  }
+
+  QUARTO {
+    INT id_quarto PK
+    VARCHAR numero_quarto
+    INT andar_quarto
+    INT tipo FK
+    VARCHAR status
+    TIMESTAMP criado_em
+  }
+
+  RESERVA {
+    INT id_reserva PK
+    INT id_hospede FK
+    INT id_quarto FK
+    DATE data_checkIn
+    DATE data_checkOut
+    INT quant_hospedes
+    VARCHAR status
+    NUMERIC valor_total
+    TIMESTAMP data_reserva
+  }
+
+  PAGAMENTO {
+    INT id_pagamento PK
+    INT id_reserva FK
+    NUMERIC valor
+    TIMESTAMP data_pagamento
+    VARCHAR metodo
+    VARCHAR status
+  }
