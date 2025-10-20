@@ -6,106 +6,118 @@ class Controller_Hospede:
         pass
 
     def inserir_hospede(self) -> Hospede:
-        ''' Ref.: https://cx-oracle.readthedocs.io/en/latest/user_guide/plsql_execution.html#anonymous-pl-sql-blocks'''
-
-        # Cria uma nova conexão com o banco que permite alteração
+        
         oracle = OracleQueries(can_write=True)
-        oracle.connect()
+        cursor = oracle.connect()
+        output_value = cursor.var(int)
+        
+        print("\n--- INSERÇÃO DE NOVO HÓSPEDE ---")
+        documento = input("Documento/CPF (Novo): ")
 
-        # Solicita ao usuario o novo CPF
-        cpf = input("CPF (Novo): ")
+        if self.verifica_existencia_hospede(oracle, documento):
+            
+            nome = input("Nome: ")
+            sobrenome = input("Sobrenome: ")
+            email = input("Email: ")
+            telefone = input("Telefone: ")
 
-        if self.verifica_existencia_hospede(oracle, cpf):
-            # Solicita ao usuario o novo nome
-            nome = input("Nome (Novo): ")
-            email = input("email (Novo): ")
-            telefone = input("telefone (Novo): ")
+            data = dict(
+                id_hospede=output_value,
+                documento=documento,
+                nome=nome,
+                sobrenome=sobrenome,
+                email=email,
+                telefone=telefone
+            )
 
-            # Insere e persiste o novo hospede
-            oracle.write(f"insert into hospede values ('{cpf}', '{nome}','{email}','{telefone}')")
+            cursor.execute("""
+            begin
+                :id_hospede := HOSPEDE_ID_SEQ.NEXTVAL;
+                insert into hospede (id_hospede, documento, nome, sobrenome, email, telefone, criado_em)
+                values(:id_hospede, :documento, :nome, :sobrenome, :email, :telefone, SYSDATE);
+            end;
+            """, data)
+            
+            id_hospede = output_value.getvalue()
+            oracle.conn.commit()
 
-            # Recupera os dados do novo hospede criado transformando em um DataFrame
-            df_hospede = oracle.sqlToDataFrame(f"select cpf, nome from hospede where cpf = '{cpf}'")
+            df_hospede = oracle.sqlToDataFrame(f"select id_hospede, documento, nome, sobrenome, email, telefone from hospede where id_hospede = {id_hospede}")
 
-            # Cria um novo objeto hospede
             novo_hospede = Hospede (
-                df_hospede.cpf.values[0],
+                df_hospede.id_hospede.values[0],
+                df_hospede.documento.values[0],
                 df_hospede.nome.values[0],
+                df_hospede.sobrenome.values[0],
                 df_hospede.email.values[0],
                 df_hospede.telefone.values[0]
-)
+            )
 
-            # Exibe os atributos do novo hospede
             print(novo_hospede.to_string())
 
-            # Retorna o objeto novo_hospede para utilização posterior, caso necessário
             return novo_hospede
         else:
-            print(f"O CPF {cpf} já está cadastrado.")
+            print(f"O Documento/CPF {documento} já está cadastrado.")
             return None
 
     def atualizar_hospede(self) -> Hospede:
-        # Cria uma nova conexão com o banco que permite alteração
         oracle = OracleQueries(can_write=True)
         oracle.connect()
 
-        # Solicita ao usuário o código do cliente a ser alterado
-        cpf = int(input("CPF do hospede que deseja alterar o nome: "))
+        documento = input("Documento/CPF do hóspede que deseja alterar: ")
 
-        # Verifica se o hospede existe na base de dados
-        if not self.verifica_existencia_hospede(oracle, cpf):
-
-            # Solicita a nova descrição do hospede
+        if not self.verifica_existencia_hospede(oracle, documento):
+            
             novo_nome = input("Nome (Novo): ")
+            novo_sobrenome = input("Sobrenome (Novo): ")
+            novo_email = input("Email (Novo): ")
+            novo_telefone = input("Telefone (Novo): ")
 
-            # Atualiza o nome do hospede existente
-            oracle.write(f"update hospede set nome = '{novo_nome}' where cpf = {cpf}")
+            oracle.write(f"update hospede set nome = '{novo_nome}', sobrenome = '{novo_sobrenome}', email = '{novo_email}', telefone = '{novo_telefone}' where documento = '{documento}'")
 
-            # Recupera os dados do novo hospede criado transformando em um DataFrame
-            df_hospede = oracle.sqlToDataFrame(f"select cpf, nome from hospede where cpf = {cpf}")
+            df_hospede = oracle.sqlToDataFrame(f"select id_hospede, documento, nome, sobrenome, email, telefone from hospede where documento = '{documento}'")
 
-            # Cria um novo objeto hospede
-            hospede_atualizado = Hospede (df_hospede.cpf.values[0], 
-                                          df_hospede.nome.values[0], 
-                                          df_hospede.email.values[0], 
-                                          df_hospede.telefone.values[0])
+            hospede_atualizado = Hospede (
+                df_hospede.id_hospede.values[0], 
+                df_hospede.documento.values[0],
+                df_hospede.nome.values[0],
+                df_hospede.sobrenome.values[0],
+                df_hospede.email.values[0], 
+                df_hospede.telefone.values[0]
+            )
 
-            # Exibe os atributos do novo hospede
             print(hospede_atualizado.to_string())
 
-            # Retorna o objeto hospede_atualizado para utilização posterior, caso necessário
             return hospede_atualizado
         else:
-            print(f"O CPF {cpf} não existe.")
+            print(f"O Documento/CPF {documento} não existe.")
             return None
 
     def excluir_hospede(self):
-        # Cria uma nova conexão com o banco que permite alteração
         oracle = OracleQueries(can_write=True)
         oracle.connect()
 
-        # Solicita ao usuário o CPF do hospede a ser alterado
-        cpf = int(input("CPF do Hospede que irá excluir: "))
+        documento = input("Documento/CPF do Hóspede que irá excluir: ")
 
-        # Verifica se o hospede existe na base de dados
-        if not self.verifica_existencia_hospede(oracle, cpf):
+        if not self.verifica_existencia_hospede(oracle, documento):
 
-            # Recupera os dados do novo hospede criado transformando em um DataFrame
-            df_hospede = oracle.sqlToDataFrame(f"select cpf, nome from hospede where cpf = {cpf}")
+            df_hospede = oracle.sqlToDataFrame(f"select id_hospede, documento, nome, sobrenome, email, telefone from hospede where documento = '{documento}'")
 
-            # Revome o hospede da tabela
-            oracle.write(f"delete from hospede where cpf = {cpf}")
+            oracle.write(f"delete from hospede where documento = '{documento}'")
 
-            # Cria um novo objeto hospede para informar que foi removido
-            hospede_excluido = Hospede(df_hospede.cpf.values[0], df_hospede.nome.values[0], df_hospede.email.values[0], df_hospede.telefone.values[0])
+            hospede_excluido = Hospede(
+                df_hospede.id_hospede.values[0], 
+                df_hospede.documento.values[0],
+                df_hospede.nome.values[0], 
+                df_hospede.sobrenome.values[0],
+                df_hospede.email.values[0], 
+                df_hospede.telefone.values[0]
+            )
 
-            # Exibe os atributos do hospede excluído
-            print("Hospede Removido com Sucesso!")
+            print("Hóspede Removido com Sucesso!")
             print(hospede_excluido.to_string())
         else:
-            print(f"O CPF {cpf} não existe.")
+            print(f"O Documento/CPF {documento} não existe.")
 
-    def verifica_existencia_hospede(self, oracle:OracleQueries, cpf:str=None) -> bool:
-        # Recupera os dados do novo hospede criado transformando em um DataFrame
-        df_hospede = oracle.sqlToDataFrame(f"select cpf, nome from hospede where cpf = {cpf}")
+    def verifica_existencia_hospede(self, oracle:OracleQueries, documento:str=None) -> bool:
+        df_hospede = oracle.sqlToDataFrame(f"select id_hospede from hospede where documento = '{documento}'")
         return df_hospede.empty
