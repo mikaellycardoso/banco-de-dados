@@ -1,7 +1,17 @@
+###########################################################################
+# Author: Howard Roatti
+# Created: 02/09/2022
+# Last Update: 03/09/2022
+#
+# Essa classe auxilia na conexão com o Banco de Dados Oracle
+# Documentação base: 
+#                  (1) https://cx-oracle.readthedocs.io/en/latest/user_guide/sql_execution.html
+#                  (2) https://cx-oracle.readthedocs.io/en/latest/user_guide/plsql_execution.html
+#                  (3) https://cx-oracle.readthedocs.io/en/latest/index.html
+###########################################################################
 import json
-import oracledb
+import cx_Oracle
 from pandas import DataFrame
-import os
 
 class OracleQueries:
 
@@ -12,14 +22,7 @@ class OracleQueries:
         self.service_name = 'XEPDB1'
         self.sid = 'XE'
 
-        self.conn = None
-        self.cur = None
-        
-        
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        auth_file_path = os.path.join(base_dir, "passphrase", "passphrase", "authentication.oracle")
-        
-        with open(auth_file_path, "r") as f:
+        with open("conexion/passphrase/authentication.oracle", "r") as f:
             self.user, self.passwd = f.read().split(',')            
 
     def __del__(self):
@@ -37,12 +40,12 @@ class OracleQueries:
         return: string de conexão
         '''
         if not in_container:
-            string_connection = oracledb.makedsn(host=self.host,
+            string_connection = cx_Oracle.makedsn(host=self.host,
                                                 port=self.port,
                                                 sid=self.sid
                                                 )
         elif in_container:
-            string_connection = oracledb.makedsn(host=self.host,
+            string_connection = cx_Oracle.makedsn(host=self.host,
                                                 port=self.port,
                                                 service_name=self.service_name
                                                 )
@@ -56,13 +59,13 @@ class OracleQueries:
         - password: senha do usuário criado para utilização do banco de dados
         - dsn: string de conexão para acessar o banco de dados oracle
         - enconding: codificação de caracteres para não haver erros com caracteres em português
-        return: um cursor que permite utilizar as funções da biblioteca oracledb
+        return: um cursor que permite utilizar as funções da biblioteca cx_Oracle
         '''
 
-        self.conn = oracledb.connect(user=self.user,
-                                      password=self.passwd,
-                                      dsn=self.connectionString()
-                                     )
+        self.conn = cx_Oracle.connect(user=self.user,
+                        password=self.passwd,
+                        dsn=self.connectionString(in_container=True)
+                        )
         self.cur = self.conn.cursor()
         return self.cur
 
