@@ -10,7 +10,7 @@
 #                  (3) https://cx-oracle.readthedocs.io/en/latest/index.html
 ###########################################################################
 import json
-import cx_Oracle
+import oracledb
 from pandas import DataFrame
 
 class OracleQueries:
@@ -40,12 +40,12 @@ class OracleQueries:
         return: string de conexão
         '''
         if not in_container:
-            string_connection = cx_Oracle.makedsn(host=self.host,
+            string_connection = oracledb.makedsn(host=self.host,
                                                 port=self.port,
                                                 sid=self.sid
                                                 )
         elif in_container:
-            string_connection = cx_Oracle.makedsn(host=self.host,
+            string_connection = oracledb.makedsn(host=self.host,
                                                 port=self.port,
                                                 service_name=self.service_name
                                                 )
@@ -62,7 +62,7 @@ class OracleQueries:
         return: um cursor que permite utilizar as funções da biblioteca cx_Oracle
         '''
 
-        self.conn = cx_Oracle.connect(user=self.user,
+        self.conn = oracledb.connect(user=self.user,
                         password=self.passwd,
                         dsn=self.connectionString(in_container=True)
                         )
